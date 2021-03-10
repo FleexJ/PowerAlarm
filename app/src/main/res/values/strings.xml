@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PowerAlarm</string>
+    <string name="switchOn">Вкл</string>
+    <string name="switchOff">Выкл</string>
+</resources>
