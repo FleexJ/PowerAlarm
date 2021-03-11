@@ -1,10 +1,16 @@
 package com.example.poweralarm.activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -14,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.poweralarm.R;
+import com.example.poweralarm.receiver.PowerMonitorReceiver;
 
 public class MainActivity extends Activity {
 
@@ -32,6 +39,7 @@ public class MainActivity extends Activity {
         final TextView textViewPercent = findViewById(R.id.textVIewPercent);
         final SeekBar seekBarPercent = findViewById(R.id.seekBarPercent);
         final Switch switchOn = findViewById(R.id.switchOn);
+        final TextView textView = findViewById(R.id.textView);
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE)) {
             int value = mSettings.getInt(SHARED_PERCENT, 20);
@@ -49,6 +57,7 @@ public class MainActivity extends Activity {
             editor.putBoolean(SHARED_ACTIVE, active);
             editor.apply();
         }
+        updateTextView(textView);
 
         seekBarPercent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -66,6 +75,7 @@ public class MainActivity extends Activity {
                     seekBar.setProgress(1);
                 editor.putInt(SHARED_PERCENT, seekBar.getProgress());
                 editor.apply();
+                updateTextView(textView);
             }
         });
 
@@ -83,7 +93,14 @@ public class MainActivity extends Activity {
                     editor.apply();
                     Toast.makeText(MainActivity.this,"Уведомление отключено", Toast.LENGTH_SHORT).show();
                 }
+                updateTextView(textView);
             }
         });
+        registerReceiver(new PowerMonitorReceiver(), new IntentFilter(PowerMonitorReceiver.ACTION));
+    }
+
+    public void updateTextView(TextView textView) {
+        final SharedPreferences mSettings = getSharedPreferences(SHARED_FILE, Context.MODE_PRIVATE);
+        textView.setText("Shared value: \n" +  mSettings.getInt(SHARED_PERCENT, 20) + "%\n" + mSettings.getBoolean(SHARED_ACTIVE, false));
     }
 }
