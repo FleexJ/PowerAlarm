@@ -28,18 +28,32 @@ public class MainActivity extends Activity {
     public static final String SHARED_PERCENT = "PowerAlarmPercent";
     public static final String SHARED_ACTIVE = "PowerAlarmActive";
 
+    private SharedPreferences mSettings;
+    private SharedPreferences.Editor editor;
+
+    private TextView textViewPercent;
+    private SeekBar seekBarPercent;
+    private Switch switchOn;
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final SharedPreferences mSettings = getSharedPreferences(SHARED_FILE, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = mSettings.edit();
+        mSettings = getSharedPreferences(SHARED_FILE, Context.MODE_PRIVATE);
+        editor = mSettings.edit();
+        textViewPercent = findViewById(R.id.textVIewPercent);
+        seekBarPercent = findViewById(R.id.seekBarPercent);
+        switchOn = findViewById(R.id.switchOn);
+        textView = findViewById(R.id.textView);
 
-        final TextView textViewPercent = findViewById(R.id.textVIewPercent);
-        final SeekBar seekBarPercent = findViewById(R.id.seekBarPercent);
-        final Switch switchOn = findViewById(R.id.switchOn);
-        final TextView textView = findViewById(R.id.textView);
+        start();
+    }
+
+    public void start() {
+        final Context myContext = this;
+        final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE)) {
             int value = mSettings.getInt(SHARED_PERCENT, 20);
@@ -87,6 +101,7 @@ public class MainActivity extends Activity {
                     editor.putBoolean(SHARED_ACTIVE, true);
                     editor.apply();
                     Toast.makeText(MainActivity.this,"Уведомление активировано", Toast.LENGTH_SHORT).show();
+                    myContext.registerReceiver(new PowerMonitorReceiver(), new IntentFilter(PowerMonitorReceiver.ACTION));
                 }
                 else {
                     editor.putBoolean(SHARED_ACTIVE, false);
@@ -96,11 +111,9 @@ public class MainActivity extends Activity {
                 updateTextView(textView);
             }
         });
-        registerReceiver(new PowerMonitorReceiver(), new IntentFilter(PowerMonitorReceiver.ACTION));
     }
 
     public void updateTextView(TextView textView) {
-        final SharedPreferences mSettings = getSharedPreferences(SHARED_FILE, Context.MODE_PRIVATE);
         textView.setText("Shared value: \n" +  mSettings.getInt(SHARED_PERCENT, 20) + "%\n" + mSettings.getBoolean(SHARED_ACTIVE, false));
     }
 }

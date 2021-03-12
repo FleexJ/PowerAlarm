@@ -22,12 +22,13 @@ import com.example.poweralarm.activity.MainActivity;
 public class PowerMonitorReceiver extends BroadcastReceiver {
     public static final String CHANNEL_ID = "PowerAlarmIDChannel";
     public static final String CHANNEL_NAME = "PowerAlarmNameChannel";
-    public static final String ACTION = Intent.ACTION_BATTERY_LOW;
+    public static final String ACTION = Intent.ACTION_BATTERY_CHANGED;
+    private static final int ID_NOTIF = 0;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(ACTION)) {
-            Log.v("CheckBattery\t", "work");
+//            Log.v("CheckBattery\t", "work");
             final SharedPreferences mSettings = context.getSharedPreferences(MainActivity.SHARED_FILE, Context.MODE_PRIVATE);
 
             boolean active = false;
@@ -40,50 +41,53 @@ public class PowerMonitorReceiver extends BroadcastReceiver {
 
             int curValue = intent.getIntExtra("level", 0);
 
-            if (active /*&& minValue >= curValue*/) {
-                Log.v("CheckBattery\t", "true");
-                Intent intent_new = new Intent(context, MainActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, intent_new, PendingIntent.FLAG_CANCEL_CURRENT);
-                BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
-
-                if(Build.VERSION.SDK_INT >= 26 ){
-                    NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                    Notification.Builder builder = new Notification.Builder(context.getApplicationContext(), CHANNEL_ID);
-                    NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-                    notificationChannel.enableVibration(true);
-                    notificationChannel.setLockscreenVisibility(1);
-                    notificationChannel.enableLights(true);
-
-                    builder.setContentIntent(pendingIntent)
-                            .setSmallIcon(R.drawable.ic_launcher_background)
-                            .setContentTitle("Уровень заряда!")
-//                            .setContentText("Опустился до " + minValue + "%")
-                            .setContentText(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) + "%")
-                            .setShowWhen(true)
-                            .setAutoCancel(true);
-                    Notification notification = builder.build();
-                    notification.defaults = NotificationCompat.DEFAULT_ALL;
-                    nm.createNotificationChannel(notificationChannel);
-                    nm.cancel(0);
-                    nm.notify(0, notification);
-                }
-                else {
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(context.getApplicationContext(), CHANNEL_ID)
-                                    .setContentTitle("Уровень заряда!")
-//                                    .setContentText("Опустился до " + minValue + "%")
-                                    .setContentText(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) + "%")
-                                    .setContentIntent(pendingIntent)
-                                    .setDefaults(Notification.DEFAULT_SOUND)
-                                    .setAutoCancel(true);
-
-                    NotificationManagerCompat notificationManager =
-                            NotificationManagerCompat.from(context.getApplicationContext());
-                    notificationManager.cancel(0);
-                    notificationManager.notify(0, builder.build());
-                }
+            if (active && (minValue == curValue || curValue == 100)) {
+//                Log.v("CheckBattery\t", " show notification");
+                showNotification(context);
             }
-            context.registerReceiver(new PowerMonitorReceiver(), new IntentFilter(ACTION));
+        }
+    }
+
+    private void showNotification(Context context) {
+        Intent intent_new = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context.getApplicationContext(), ID_NOTIF, intent_new, PendingIntent.FLAG_CANCEL_CURRENT);
+        int currentPower = ((BatteryManager) context.getSystemService(Context.BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+        if(Build.VERSION.SDK_INT >= 26 ){
+            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification.Builder builder = new Notification.Builder(context.getApplicationContext(), CHANNEL_ID);
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setLockscreenVisibility(1);
+            notificationChannel.enableLights(true);
+
+            builder.setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.battery)
+                    .setContentTitle("Уровень заряда!")
+                    .setContentText(currentPower + "%")
+                    .setShowWhen(true)
+                    .setAutoCancel(true);
+            Notification notification = builder.build();
+                    notification.defaults = NotificationCompat.DEFAULT_ALL;
+            nm.createNotificationChannel(notificationChannel);
+            nm.cancel(ID_NOTIF);
+            nm.notify(ID_NOTIF, notification);
+        }
+        else
+        if (Build.VERSION.SDK_INT >= 21) {
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(context.getApplicationContext(), CHANNEL_ID)
+                            .setSmallIcon(R.drawable.battery)
+                            .setContentTitle("Уровень заряда!")
+                            .setContentText(currentPower + "%")
+                            .setContentIntent(pendingIntent)
+                            .setDefaults(Notification.DEFAULT_SOUND)
+                            .setAutoCancel(true);
+
+            NotificationManagerCompat notificationManager =
+                    NotificationManagerCompat.from(context.getApplicationContext());
+            notificationManager.cancel(ID_NOTIF);
+            notificationManager.notify(ID_NOTIF, builder.build());
         }
     }
 }
