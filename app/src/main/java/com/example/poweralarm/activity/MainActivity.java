@@ -1,18 +1,14 @@
 package com.example.poweralarm.activity;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -20,9 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.poweralarm.R;
-import com.example.poweralarm.receiver.PowerMonitorReceiver;
+import com.example.poweralarm.receiver.PowerReceiver;
+import com.example.poweralarm.receiver.StartPowerReceiver;
+
+import java.util.Calendar;
 
 public class MainActivity extends Activity {
+    public static final String CHANNEL_ID = "PowerAlarmIDChannel";
+    public static final String CHANNEL_NAME = "PowerAlarmNameChannel";
+    public static final String ACTION = Intent.ACTION_BATTERY_CHANGED;
+    public static final int ID_NOTIF = 0;
 
     public static final String SHARED_FILE = "PowerAlarmShared";
     public static final String SHARED_PERCENT = "PowerAlarmPercent";
@@ -52,7 +55,8 @@ public class MainActivity extends Activity {
     }
 
     public void start() {
-        final Context myContext = this;
+        cancelAlarm();
+
         final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE)) {
@@ -101,7 +105,6 @@ public class MainActivity extends Activity {
                     editor.putBoolean(SHARED_ACTIVE, true);
                     editor.apply();
                     Toast.makeText(MainActivity.this,"Уведомление активировано", Toast.LENGTH_SHORT).show();
-                    myContext.registerReceiver(new PowerMonitorReceiver(), new IntentFilter(PowerMonitorReceiver.ACTION));
                 }
                 else {
                     editor.putBoolean(SHARED_ACTIVE, false);
@@ -111,6 +114,30 @@ public class MainActivity extends Activity {
                 updateTextView(textView);
             }
         });
+        registerReceiver(new PowerReceiver(), new IntentFilter(ACTION));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        startAlarm();
+    }
+
+    public void startAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), StartPowerReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_NOTIF, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.SECOND, 3);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, now.getTimeInMillis(), pendingIntent);
+    }
+
+    public void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), StartPowerReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_NOTIF, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
     public void updateTextView(TextView textView) {
