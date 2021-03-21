@@ -7,55 +7,94 @@
     tools:context=".activity.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/LayoutPercent"
         android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/switchOn"
+        android:layout_height="86dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <TextView
             android:id="@+id/textVIewPercent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginEnd="50dp"
             android:gravity="center"
             android:text="Value"
-            app:layout_constraintBottom_toTopOf="@+id/seekBarPercent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <SeekBar
             android:id="@+id/seekBarPercent"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="900px"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
             android:max="99"
             android:progress="20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textVIewPercent" />
+
+        <Switch
+            android:id="@+id/switchOn"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginStart="5dp"
+            android:textOff="@string/switchOn"
+            android:textOn="@string/switchOff"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/seekBarPercent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.852" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Switch
-        android:id="@+id/switchOn"
-        android:layout_width="48dp"
-        android:layout_height="51dp"
-        android:textOff="@string/switchOn"
-        android:textOn="@string/switchOff"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/LayoutFull"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LayoutPercent"
+        app:layout_constraintVertical_bias="0.009">
+
+        <TextView
+            android:id="@+id/textViewFullPower"
+            android:layout_width="900px"
+            android:layout_height="52dp"
+            android:gravity="center"
+            android:text="100% charge"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Switch
+            android:id="@+id/switchFull"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginStart="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/textViewFullPower"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.436"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

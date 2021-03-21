@@ -15,7 +15,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.poweralarm.R;
+import com.example.poweralarm.StartService;
 import com.example.poweralarm.receiver.PowerReceiver;
 import com.example.poweralarm.receiver.StartPowerReceiver;
 
@@ -30,14 +32,15 @@ public class MainActivity extends Activity {
     public static final String SHARED_FILE = "PowerAlarmShared";
     public static final String SHARED_PERCENT = "PowerAlarmPercent";
     public static final String SHARED_ACTIVE = "PowerAlarmActive";
+    public static final String SHARED_FULL_ACTIVE = "PowerAlarmFullActive";
 
     private SharedPreferences mSettings;
-    private SharedPreferences.Editor editor;
 
     private TextView textViewPercent;
     private SeekBar seekBarPercent;
     private Switch switchOn;
     private TextView textView;
+    private Switch switchFull;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,34 +48,40 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mSettings = getSharedPreferences(SHARED_FILE, Context.MODE_PRIVATE);
-        editor = mSettings.edit();
         textViewPercent = findViewById(R.id.textVIewPercent);
         seekBarPercent = findViewById(R.id.seekBarPercent);
         switchOn = findViewById(R.id.switchOn);
         textView = findViewById(R.id.textView);
+        switchFull = findViewById(R.id.switchFull);
 
         start();
     }
 
     public void start() {
+        stopService(new Intent(this.getApplicationContext(), StartService.class));
         cancelAlarm();
 
         final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        final SharedPreferences.Editor editor = mSettings.edit();
 
-        if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE)) {
+        if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE) && mSettings.contains(SHARED_FULL_ACTIVE)) {
             int value = mSettings.getInt(SHARED_PERCENT, 20);
             textViewPercent.setText(value + " %");
             seekBarPercent.setProgress(value);
             switchOn.setChecked(mSettings.getBoolean(SHARED_ACTIVE, false));
+            switchFull.setChecked(mSettings.getBoolean(SHARED_FULL_ACTIVE, false));
         }
         else {
             final int value = 20;
             final boolean active = false;
+            final boolean fullActive = false;
             textViewPercent.setText(value + " %");
             seekBarPercent.setProgress(value);
             switchOn.setChecked(active);
+            switchFull.setChecked(fullActive);
             editor.putInt(SHARED_PERCENT, value);
             editor.putBoolean(SHARED_ACTIVE, active);
+            editor.putBoolean(SHARED_FULL_ACTIVE, fullActive);
             editor.apply();
         }
         updateTextView(textView);
@@ -104,23 +113,45 @@ public class MainActivity extends Activity {
                 if (sw.isChecked()) {
                     editor.putBoolean(SHARED_ACTIVE, true);
                     editor.apply();
-                    Toast.makeText(MainActivity.this,"Уведомление активировано", Toast.LENGTH_SHORT).show();
+                    showToast(MainActivity.this, "Уведомление активировано");
                 }
                 else {
                     editor.putBoolean(SHARED_ACTIVE, false);
                     editor.apply();
-                    Toast.makeText(MainActivity.this,"Уведомление отключено", Toast.LENGTH_SHORT).show();
+                    showToast(MainActivity.this, "Уведомление отключено");
                 }
                 updateTextView(textView);
             }
         });
-        registerReceiver(new PowerReceiver(), new IntentFilter(ACTION));
+
+        switchFull.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Switch sw = (Switch) buttonView;
+                if (sw.isChecked()) {
+                    editor.putBoolean(SHARED_FULL_ACTIVE, true);
+                    editor.apply();
+                    showToast(MainActivity.this, "Уведомление активировано");
+                }
+                else {
+                    editor.putBoolean(SHARED_FULL_ACTIVE, false);
+                    editor.apply();
+                    showToast(MainActivity.this, "Уведомление отключено");
+                }
+                updateTextView(textView);
+            }
+        });
+        startService(new Intent(this.getApplicationContext(), StartService.class));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        startAlarm();
+//        startAlarm();
+    }
+
+    public void showToast(Context context, String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
     public void startAlarm() {
@@ -141,6 +172,8 @@ public class MainActivity extends Activity {
     }
 
     public void updateTextView(TextView textView) {
-        textView.setText("Shared value: \n" +  mSettings.getInt(SHARED_PERCENT, 20) + "%\n" + mSettings.getBoolean(SHARED_ACTIVE, false));
+        textView.setText("Shared value:\nPercent: " +  mSettings.getInt(SHARED_PERCENT, 20) + "%\nPercentActive: " +
+                mSettings.getBoolean(SHARED_ACTIVE, false) +
+                "\nFullActive: " + mSettings.getBoolean(SHARED_FULL_ACTIVE, false));
     }
 }

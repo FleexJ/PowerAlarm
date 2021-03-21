@@ -12,6 +12,6 @@ public class StartPowerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.v("Start power\t", "");
-        context.getApplicationContext().registerReceiver(new PowerReceiver(), new IntentFilter(MainActivity.ACTION));
+        context.getApplicationContext().startService(new Intent(context.getApplicationContext(), StartPowerReceiver.class));
     }
 }

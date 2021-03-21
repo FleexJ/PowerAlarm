@@ -27,28 +27,29 @@ public class PowerReceiver extends BroadcastReceiver {
 
             boolean active = false;
             int minValue = 20;
+            boolean fullActive = false;
 
-            if (mSettings.contains(MainActivity.SHARED_ACTIVE) && mSettings.contains(MainActivity.SHARED_PERCENT)) {
+            if (mSettings.contains(MainActivity.SHARED_ACTIVE) && mSettings.contains(MainActivity.SHARED_PERCENT) && mSettings.contains(MainActivity.SHARED_FULL_ACTIVE)) {
                 active = mSettings.getBoolean(MainActivity.SHARED_ACTIVE, active);
                 minValue = mSettings.getInt(MainActivity.SHARED_PERCENT, minValue);
+                fullActive = mSettings.getBoolean(MainActivity.SHARED_FULL_ACTIVE, fullActive);
             }
 
             int curValue = intent.getIntExtra("level", -1);
+            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
 
             Log.v("Receiver\t", String.valueOf(curValue));
-            if (active) {
-                Log.v("Receiver active\t", String.valueOf(curValue));
-                BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
-                if (curValue == 100 && batteryManager.getIntProperty(BatteryManager.BATTERY_STATUS_CHARGING) == BatteryManager.BATTERY_STATUS_CHARGING) {
+//            BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+
+            if (active && minValue == curValue && !isCharging) {
+                Log.v("Receiver, minVal\t", String.valueOf(curValue));
+                showNotification(context);
+            } else
+                if (fullActive && curValue == 100 && isCharging) {
                     Log.v("Receiver, charge 100%\t", String.valueOf(curValue));
                     showNotification(context);
                 }
-                else
-                if (minValue == curValue) {
-                    Log.v("Receiver, minVal\t", String.valueOf(curValue));
-                    showNotification(context);
-                }
-            }
         }
     }
 
@@ -78,7 +79,7 @@ public class PowerReceiver extends BroadcastReceiver {
             nm.notify(MainActivity.ID_NOTIF, notification);
         }
         else
-        if (Build.VERSION.SDK_INT >= 21) {
+        /*if (Build.VERSION.SDK_INT >= 21) */{
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context.getApplicationContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.battery)
