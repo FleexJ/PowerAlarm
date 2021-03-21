@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.poweralarm.R;
 import com.example.poweralarm.service.StartService;
-import com.example.poweralarm.receiver.StartPowerReceiver;
 
 import java.util.Calendar;
 
@@ -57,7 +56,6 @@ public class MainActivity extends Activity {
 
     public void start() {
         stopService(new Intent(this.getApplicationContext(), StartService.class));
-        cancelAlarm();
 
         final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         final SharedPreferences.Editor editor = mSettings.edit();
@@ -104,6 +102,8 @@ public class MainActivity extends Activity {
             }
         });
 
+        final String msg = "Не ограничивайте работу приложения в фоне.";
+
         switchOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
                 if (sw.isChecked()) {
                     editor.putBoolean(SHARED_ACTIVE, true);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление активировано");
+                    showToast(MainActivity.this, "Уведомление активировано\n" + msg);
                 }
                 else {
                     editor.putBoolean(SHARED_ACTIVE, false);
@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
                 if (sw.isChecked()) {
                     editor.putBoolean(SHARED_FULL_ACTIVE, true);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление активировано");
+                    showToast(MainActivity.this, "Уведомление активировано\n" + msg);
                 }
                 else {
                     editor.putBoolean(SHARED_FULL_ACTIVE, false);
@@ -139,34 +139,12 @@ public class MainActivity extends Activity {
                 updateTextView(textView);
             }
         });
-        startService(new Intent(this.getApplicationContext(), StartService.class));
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        startAlarm();
+        startService(new Intent(this.getApplicationContext(), StartService.class));
     }
 
     public void showToast(Context context, String msg) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    public void startAlarm() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(getApplicationContext(), StartPowerReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_NOTIF, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.cancel(pendingIntent);
-        Calendar now = Calendar.getInstance();
-        now.add(Calendar.SECOND, 3);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, now.getTimeInMillis(), pendingIntent);
-    }
-
-    public void cancelAlarm() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(getApplicationContext(), StartPowerReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_NOTIF, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.cancel(pendingIntent);
     }
 
     public void updateTextView(TextView textView) {
