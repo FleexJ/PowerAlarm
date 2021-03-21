@@ -1,4 +1,4 @@
-package com.example.poweralarm;
+package com.example.poweralarm.service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

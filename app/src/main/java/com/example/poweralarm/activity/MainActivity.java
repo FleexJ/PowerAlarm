@@ -5,7 +5,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -17,8 +16,7 @@ import android.widget.Toast;
 
 
 import com.example.poweralarm.R;
-import com.example.poweralarm.StartService;
-import com.example.poweralarm.receiver.PowerReceiver;
+import com.example.poweralarm.service.StartService;
 import com.example.poweralarm.receiver.StartPowerReceiver;
 
 import java.util.Calendar;
