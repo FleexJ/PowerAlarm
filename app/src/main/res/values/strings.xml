@@ -2,4 +2,7 @@
     <string name="app_name">PowerAlarm</string>
     <string name="switchOn">Вкл</string>
     <string name="switchOff">Выкл</string>
+    <string name="switchOnMessage">Уведомление активировано\nНе ограничивайте работу приложения в фоне.</string>
+    <string name="switchOffMessage">Уведомление отключено</string>
+    <string name="notifPowerInfo">Уровень заряда</string>
 </resources>

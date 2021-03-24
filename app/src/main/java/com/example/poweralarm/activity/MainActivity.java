@@ -62,7 +62,8 @@ public class MainActivity extends Activity {
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE) && mSettings.contains(SHARED_FULL_ACTIVE)) {
             int value = mSettings.getInt(SHARED_PERCENT, 20);
-            textViewPercent.setText(value + " %");
+            String str = value + " %";
+            textViewPercent.setText(str);
             seekBarPercent.setProgress(value);
             switchOn.setChecked(mSettings.getBoolean(SHARED_ACTIVE, false));
             switchFull.setChecked(mSettings.getBoolean(SHARED_FULL_ACTIVE, false));
@@ -71,7 +72,8 @@ public class MainActivity extends Activity {
             final int value = 20;
             final boolean active = false;
             final boolean fullActive = false;
-            textViewPercent.setText(value + " %");
+            String str = value + " %";
+            textViewPercent.setText(str);
             seekBarPercent.setProgress(value);
             switchOn.setChecked(active);
             switchFull.setChecked(fullActive);
@@ -85,7 +87,8 @@ public class MainActivity extends Activity {
         seekBarPercent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textViewPercent.setText(progress + " %");
+                String str = progress + " %";
+                textViewPercent.setText(str);
             }
 
             @Override
@@ -102,7 +105,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        final String msg = "Не ограничивайте работу приложения в фоне.";
 
         switchOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -111,12 +113,14 @@ public class MainActivity extends Activity {
                 if (sw.isChecked()) {
                     editor.putBoolean(SHARED_ACTIVE, true);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление активировано\n" + msg);
+                    String msg = getString(R.string.switchOnMessage);
+                    showToastLong(MainActivity.this, msg);
                 }
                 else {
                     editor.putBoolean(SHARED_ACTIVE, false);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление отключено");
+                    String msg = getString(R.string.switchOffMessage);
+                    showToastShort(MainActivity.this, msg);
                 }
                 updateTextView(textView);
             }
@@ -129,12 +133,14 @@ public class MainActivity extends Activity {
                 if (sw.isChecked()) {
                     editor.putBoolean(SHARED_FULL_ACTIVE, true);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление активировано\n" + msg);
+                    String msg = getString(R.string.switchOnMessage);
+                    showToastLong(MainActivity.this, msg);
                 }
                 else {
                     editor.putBoolean(SHARED_FULL_ACTIVE, false);
                     editor.apply();
-                    showToast(MainActivity.this, "Уведомление отключено");
+                    String msg = getString(R.string.switchOffMessage);
+                    showToastShort(MainActivity.this, msg);
                 }
                 updateTextView(textView);
             }
@@ -143,13 +149,18 @@ public class MainActivity extends Activity {
         startService(new Intent(this.getApplicationContext(), StartService.class));
     }
 
-    public void showToast(Context context, String msg) {
+    public void showToastShort(Context context, String msg) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
+    public void showToastLong(Context context, String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+    }
+
     public void updateTextView(TextView textView) {
-        textView.setText("Shared value:\nPercent: " +  mSettings.getInt(SHARED_PERCENT, 20) + "%\nPercentActive: " +
-                mSettings.getBoolean(SHARED_ACTIVE, false) +
-                "\nFullActive: " + mSettings.getBoolean(SHARED_FULL_ACTIVE, false));
+        String str = "Shared value:\nPercent: " +  mSettings.getInt(SHARED_PERCENT, 20) +
+                "%\nPercentActive: " + mSettings.getBoolean(SHARED_ACTIVE, false) +
+                "\nFullActive: " + mSettings.getBoolean(SHARED_FULL_ACTIVE, false);
+        textView.setText(str);
     }
 }

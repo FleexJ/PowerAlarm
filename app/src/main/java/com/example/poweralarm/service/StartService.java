@@ -23,12 +23,15 @@ public class StartService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        try {
+            unregisterReceiver(powerReceiver);
+        } catch (Exception e) {}
         registerReceiver(powerReceiver, new IntentFilter(MainActivity.ACTION));
     }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(powerReceiver);
+//        unregisterReceiver(powerReceiver);
         super.onDestroy();
     }
 

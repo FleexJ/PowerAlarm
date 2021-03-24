@@ -68,7 +68,7 @@ public class PowerReceiver extends BroadcastReceiver {
 
             builder.setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.battery)
-                    .setContentTitle("Уровень заряда!")
+                    .setContentTitle(context.getString(R.string.notifPowerInfo))
                     .setContentText(currentPower + "%")
                     .setShowWhen(true)
                     .setAutoCancel(true);
@@ -83,7 +83,7 @@ public class PowerReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context.getApplicationContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.battery)
-                            .setContentTitle("Уровень заряда!")
+                            .setContentTitle(context.getString(R.string.notifPowerInfo))
                             .setContentText(currentPower + "%")
                             .setContentIntent(pendingIntent)
                             .setDefaults(Notification.DEFAULT_SOUND)
