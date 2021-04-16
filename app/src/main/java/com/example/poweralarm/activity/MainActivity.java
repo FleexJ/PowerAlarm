@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -55,6 +56,7 @@ public class MainActivity extends Activity {
     }
 
     public void start() {
+        Log.v("MainActivity", "start() begin");
         stopService(new Intent(this.getApplicationContext(), StartService.class));
 
         final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
@@ -147,6 +149,7 @@ public class MainActivity extends Activity {
         });
 
         startService(new Intent(this.getApplicationContext(), StartService.class));
+        Log.v("MainActivity", "start() end");
     }
 
     public void showToastShort(Context context, String msg) {

@@ -21,16 +21,13 @@
                 <action android:name="android.intent.action.ACTION_BATTERY_CHANGED" />
             </intent-filter>
         </receiver>
+        <service android:name=".service.StartService">
+        </service>
         <receiver android:name=".receiver.StartServiceReceiver">
             <intent-filter>
                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-<!--        <service android:name=".service.StartService">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
     </application>
 
 </manifest>

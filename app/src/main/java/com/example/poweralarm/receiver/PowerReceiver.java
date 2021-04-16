@@ -22,6 +22,7 @@ public class PowerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.v("PowerReceiver", "onReceive");
         if (intent.getAction().equals(MainActivity.ACTION)) {
             final SharedPreferences mSettings = context.getSharedPreferences(MainActivity.SHARED_FILE, Context.MODE_PRIVATE);
 
@@ -39,21 +40,20 @@ public class PowerReceiver extends BroadcastReceiver {
             int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
             boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
 
-            Log.v("Receiver\t", String.valueOf(curValue));
+            Log.v("PowerReceiver", "CurrentPowerLevel: " + curValue);
 //            BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
 
             if (active && minValue == curValue && !isCharging) {
-                Log.v("Receiver, minVal\t", String.valueOf(curValue));
                 showNotification(context);
             } else
                 if (fullActive && curValue == 100 && isCharging) {
-                    Log.v("Receiver, charge 100%\t", String.valueOf(curValue));
                     showNotification(context);
                 }
         }
     }
 
     private void showNotification(Context context) {
+        Log.v("PowerReceiver", "showNotification");
         Intent intent_new = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context.getApplicationContext(), MainActivity.ID_NOTIF, intent_new, PendingIntent.FLAG_CANCEL_CURRENT);
         int currentPower = ((BatteryManager) context.getSystemService(Context.BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
