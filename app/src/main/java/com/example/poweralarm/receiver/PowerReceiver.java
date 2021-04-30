@@ -22,8 +22,8 @@ public class PowerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.v("PowerReceiver", "onReceive");
         if (intent.getAction().equals(MainActivity.ACTION)) {
+            Log.v("PowerReceiver", "onReceive - " + MainActivity.ACTION);
             final SharedPreferences mSettings = context.getSharedPreferences(MainActivity.SHARED_FILE, Context.MODE_PRIVATE);
 
             boolean active = false;
@@ -73,7 +73,6 @@ public class PowerReceiver extends BroadcastReceiver {
                     .setShowWhen(true)
                     .setAutoCancel(true);
             Notification notification = builder.build();
-            notification.defaults = NotificationCompat.DEFAULT_ALL;
             nm.createNotificationChannel(notificationChannel);
             nm.cancel(MainActivity.ID_NOTIF);
             nm.notify(MainActivity.ID_NOTIF, notification);

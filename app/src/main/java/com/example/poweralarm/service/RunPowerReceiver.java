@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import com.example.poweralarm.activity.MainActivity;
 import com.example.poweralarm.receiver.PowerReceiver;
 
-public class StartService extends Service {
+public class RunPowerReceiver extends Service {
     final BroadcastReceiver powerReceiver = new PowerReceiver();
 
     @Nullable

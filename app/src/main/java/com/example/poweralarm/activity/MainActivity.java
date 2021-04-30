@@ -1,12 +1,9 @@
 package com.example.poweralarm.activity;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
@@ -17,9 +14,7 @@ import android.widget.Toast;
 
 
 import com.example.poweralarm.R;
-import com.example.poweralarm.service.StartService;
-
-import java.util.Calendar;
+import com.example.poweralarm.service.RunPowerReceiver;
 
 public class MainActivity extends Activity {
     public static final String CHANNEL_ID = "PowerAlarmIDChannel";
@@ -55,7 +50,7 @@ public class MainActivity extends Activity {
 
     public void start() {
         Log.v("MainActivity", "start() begin");
-        stopService(new Intent(this.getApplicationContext(), StartService.class));
+        stopService(new Intent(this.getApplicationContext(), RunPowerReceiver.class));
 
         final SharedPreferences.Editor editor = mSettings.edit();
 
@@ -141,7 +136,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        startService(new Intent(this.getApplicationContext(), StartService.class));
+        startService(new Intent(this.getApplicationContext(), RunPowerReceiver.class));
         Log.v("MainActivity", "start() end");
     }
 
