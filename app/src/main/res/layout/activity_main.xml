@@ -34,7 +34,7 @@
 
             <SeekBar
                 android:id="@+id/seekBarPercent"
-                android:layout_width="900px"
+                android:layout_width="350dp"
                 android:layout_height="52dp"
                 android:layout_marginTop="10dp"
                 android:max="99"
@@ -68,7 +68,7 @@
 
             <TextView
                 android:id="@+id/textViewFullPower"
-                android:layout_width="900px"
+                android:layout_width="350dp"
                 android:layout_height="52dp"
                 android:gravity="center"
                 android:text="100% charge"
