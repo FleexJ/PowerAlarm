@@ -5,4 +5,5 @@
     <string name="switchOnMessage">Уведомление активировано\nНе ограничивайте работу приложения в фоне.</string>
     <string name="switchOffMessage">Уведомление отключено</string>
     <string name="notifPowerInfo">Уровень заряда</string>
+    <string name="statusText">Напоминание при %d: %b\nНапоминание при 100: %b</string>
 </resources>

@@ -37,7 +37,6 @@ public class MainActivity extends Activity {
     private TextView textViewPercent;
     private SeekBar seekBarPercent;
     private Switch switchOn;
-    private TextView textView;
     private Switch switchFull;
 
     @Override
@@ -49,7 +48,6 @@ public class MainActivity extends Activity {
         textViewPercent = findViewById(R.id.textVIewPercent);
         seekBarPercent = findViewById(R.id.seekBarPercent);
         switchOn = findViewById(R.id.switchOn);
-        textView = findViewById(R.id.textView);
         switchFull = findViewById(R.id.switchFull);
 
         start();
@@ -59,7 +57,6 @@ public class MainActivity extends Activity {
         Log.v("MainActivity", "start() begin");
         stopService(new Intent(this.getApplicationContext(), StartService.class));
 
-        final int currentPower = ((BatteryManager) getSystemService(BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         final SharedPreferences.Editor editor = mSettings.edit();
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE) && mSettings.contains(SHARED_FULL_ACTIVE)) {
@@ -84,7 +81,6 @@ public class MainActivity extends Activity {
             editor.putBoolean(SHARED_FULL_ACTIVE, fullActive);
             editor.apply();
         }
-        updateTextView(textView);
 
         seekBarPercent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -103,7 +99,6 @@ public class MainActivity extends Activity {
                     seekBar.setProgress(1);
                 editor.putInt(SHARED_PERCENT, seekBar.getProgress());
                 editor.apply();
-                updateTextView(textView);
             }
         });
 
@@ -124,7 +119,6 @@ public class MainActivity extends Activity {
                     String msg = getString(R.string.switchOffMessage);
                     showToastShort(MainActivity.this, msg);
                 }
-                updateTextView(textView);
             }
         });
 
@@ -144,7 +138,6 @@ public class MainActivity extends Activity {
                     String msg = getString(R.string.switchOffMessage);
                     showToastShort(MainActivity.this, msg);
                 }
-                updateTextView(textView);
             }
         });
 
@@ -158,12 +151,5 @@ public class MainActivity extends Activity {
 
     public void showToastLong(Context context, String msg) {
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-    }
-
-    public void updateTextView(TextView textView) {
-        String str = "Shared value:\nPercent: " +  mSettings.getInt(SHARED_PERCENT, 20) +
-                "%\nPercentActive: " + mSettings.getBoolean(SHARED_ACTIVE, false) +
-                "\nFullActive: " + mSettings.getBoolean(SHARED_FULL_ACTIVE, false);
-        textView.setText(str);
     }
 }
