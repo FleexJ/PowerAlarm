@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
 
         if (mSettings.contains(SHARED_PERCENT) && mSettings.contains(SHARED_ACTIVE) && mSettings.contains(SHARED_FULL_ACTIVE)) {
             int value = mSettings.getInt(SHARED_PERCENT, 20);
+
             String str = value + " %";
             textViewPercent.setText(str);
             seekBarPercent.setProgress(value);
@@ -63,17 +64,15 @@ public class MainActivity extends Activity {
             switchFull.setChecked(mSettings.getBoolean(SHARED_FULL_ACTIVE, false));
         }
         else {
-            final int value = 20;
-            final boolean active = false;
-            final boolean fullActive = false;
-            String str = value + " %";
+            String str = 20 + " %";
             textViewPercent.setText(str);
-            seekBarPercent.setProgress(value);
-            switchOn.setChecked(active);
-            switchFull.setChecked(fullActive);
-            editor.putInt(SHARED_PERCENT, value);
-            editor.putBoolean(SHARED_ACTIVE, active);
-            editor.putBoolean(SHARED_FULL_ACTIVE, fullActive);
+            seekBarPercent.setProgress(20);
+            switchOn.setChecked(false);
+            switchFull.setChecked(false);
+
+            editor.putInt(SHARED_PERCENT, 20);
+            editor.putBoolean(SHARED_ACTIVE, false);
+            editor.putBoolean(SHARED_FULL_ACTIVE, false);
             editor.apply();
         }
 
