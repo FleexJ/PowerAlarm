@@ -24,25 +24,25 @@ public class RunPowerReceiver extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.v("StartService", "onCreate");
+        Log.v("RunPowerReceiver", "onCreate");
         try {
             unregisterReceiver(powerReceiver);
         } catch (IllegalArgumentException e) {
-            Log.v("StartService", "Catching IllegalArgumentException,\tDo nothing");
+            Log.v("RunPowerReceiver", "Catching IllegalArgumentException,\tDo nothing");
         }
         registerReceiver(powerReceiver, new IntentFilter(MainActivity.ACTION));
     }
 
     @Override
     public void onDestroy() {
+        Log.v("RunPowerReceiver", "onDestroy");
         unregisterReceiver(powerReceiver);
-        Log.v("StartService", "onDestroy");
         super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v("StartService", "onStartCommand");
+        Log.v("RunPowerReceiver", "onStartCommand");
         return START_STICKY;
     }
 }

@@ -24,31 +24,42 @@ public class PowerReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(MainActivity.ACTION)) {
             Log.v("PowerReceiver", "onReceive - " + MainActivity.ACTION);
+
             final SharedPreferences mSettings = context.getSharedPreferences(MainActivity.SHARED_FILE, Context.MODE_PRIVATE);
 
-            boolean active = false;
-            int minValue = 20;
-            boolean fullActive = false;
-
-            if (mSettings.contains(MainActivity.SHARED_ACTIVE) && mSettings.contains(MainActivity.SHARED_PERCENT) && mSettings.contains(MainActivity.SHARED_FULL_ACTIVE)) {
-                active = mSettings.getBoolean(MainActivity.SHARED_ACTIVE, active);
-                minValue = mSettings.getInt(MainActivity.SHARED_PERCENT, minValue);
-                fullActive = mSettings.getBoolean(MainActivity.SHARED_FULL_ACTIVE, fullActive);
-            }
+            if (!mSettings.contains(MainActivity.SHARED_MIN_ACTIVE)
+                    || !mSettings.contains(MainActivity.SHARED_MIN_PERCENT)
+                    || !mSettings.contains(MainActivity.SHARED_CHARGE_ACTIVE)
+                    || !mSettings.contains(MainActivity.SHARED_PREV_VALUE))
+                return;
 
             int curValue = intent.getIntExtra("level", -1);
             int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
-
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING
+                                 ||
+                                 status == BatteryManager.BATTERY_STATUS_FULL;
             Log.v("PowerReceiver", "CurrentPowerLevel: " + curValue);
-//            BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
 
-            if (active && minValue == curValue && !isCharging) {
+            boolean active = mSettings.getBoolean(MainActivity.SHARED_MIN_ACTIVE, false);
+            int minValue = mSettings.getInt(MainActivity.SHARED_MIN_PERCENT, 20);
+            boolean chargeActive = mSettings.getBoolean(MainActivity.SHARED_CHARGE_ACTIVE, false);
+            int prevValue = mSettings.getInt(MainActivity.SHARED_PREV_VALUE, 0);
+
+            if (active
+                    && !isCharging
+                    && minValue == curValue
+                    && prevValue != minValue) {
                 showNotification(context);
-            } else
-                if (fullActive && curValue == 100 && isCharging) {
+            } else if (chargeActive
+                    && isCharging
+                    && curValue == 100
+                    && prevValue != 100) {
                     showNotification(context);
-                }
+            }
+
+            mSettings.edit()
+                    .putInt(MainActivity.SHARED_PREV_VALUE, curValue)
+                    .apply();
         }
     }
 
@@ -77,8 +88,7 @@ public class PowerReceiver extends BroadcastReceiver {
             nm.cancel(MainActivity.ID_NOTIF);
             nm.notify(MainActivity.ID_NOTIF, notification);
         }
-        else
-        /*if (Build.VERSION.SDK_INT >= 21) */{
+        else {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context.getApplicationContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.battery)
