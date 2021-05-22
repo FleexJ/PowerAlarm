@@ -25,11 +25,6 @@ public class RunPowerReceiver extends Service {
     public void onCreate() {
         super.onCreate();
         Log.v("RunPowerReceiver", "onCreate");
-        try {
-            unregisterReceiver(powerReceiver);
-        } catch (IllegalArgumentException e) {
-            Log.v("RunPowerReceiver", "Catching IllegalArgumentException,\tDo nothing");
-        }
         registerReceiver(powerReceiver, new IntentFilter(MainActivity.ACTION));
     }
 

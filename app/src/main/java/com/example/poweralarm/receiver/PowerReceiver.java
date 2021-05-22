@@ -67,7 +67,10 @@ public class PowerReceiver extends BroadcastReceiver {
         Log.v("PowerReceiver", "showNotification");
         Intent intent_new = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context.getApplicationContext(), MainActivity.ID_NOTIF, intent_new, PendingIntent.FLAG_CANCEL_CURRENT);
-        int currentPower = ((BatteryManager) context.getSystemService(Context.BATTERY_SERVICE)).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        int currentPower = (
+                (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE))
+                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY
+        );
 
         if(Build.VERSION.SDK_INT >= 26 ){
             NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -89,8 +92,7 @@ public class PowerReceiver extends BroadcastReceiver {
             nm.notify(MainActivity.ID_NOTIF, notification);
         }
         else {
-            NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(context.getApplicationContext(), MainActivity.CHANNEL_ID)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.battery)
                             .setContentTitle(context.getString(R.string.notifPowerInfo))
                             .setContentText(currentPower + "%")
